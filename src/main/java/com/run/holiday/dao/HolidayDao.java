@@ -10,7 +10,6 @@ import org.jdbi.v3.sqlobject.statement.SqlBatch;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
-import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,11 +23,10 @@ public interface HolidayDao {
   // language=SQL
   @SqlQuery(
       "select * from holiday "
-          + "where (:state is null or state = :state)"
-          + "and (:year is null or year = :year)"
-          + "and (:type is null or type = :type)")
-  List<Holiday> findAll(
-      Optional<NationalState> state, Optional<Year> year, Optional<HolidayType> type);
+          + "where (:state is null or state = :state) "
+          + "and (:year is null or year = :year) "
+          + "and (:type is null or type = :type) ")
+  List<Holiday> findAll(NationalState state, Integer year, HolidayType type);
 
   // language=SQL
   @SqlUpdate(

@@ -35,9 +35,9 @@ public class HolidayService {
                     HttpStatus.NOT_FOUND, "No holiday records exist with uuid: " + uuid));
   }
 
-  public List<Holiday> findHolidays(
-      Optional<NationalState> state, Optional<Year> year, Optional<HolidayType> type) {
-    return meterDao.findAll(state, year, type);
+  public List<Holiday> findHolidays(NationalState state, Year year, HolidayType type) {
+    return meterDao.findAll(
+        state, Optional.ofNullable(year).map(Year::getValue).orElse(null), type);
   }
 
   public SyncResultDto synchroniseHolidays(NationalState state) {
@@ -47,7 +47,7 @@ public class HolidayService {
     }
 
     int records = 0;
-    List<Holiday> saved = findHolidays(Optional.of(state), Optional.empty(), Optional.empty());
+    List<Holiday> saved = findHolidays(state, null, null);
 
     log.debug("Listing existing holidays");
     saved.forEach(h -> log.debug("{}", h));

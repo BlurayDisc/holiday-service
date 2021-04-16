@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Year;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -23,17 +22,17 @@ public class HolidayController {
 
   private final HolidayService holidayService;
 
-  @PostMapping("/{uuid}")
+  @GetMapping("/{uuid}")
   public Holiday getHoliday(@PathVariable UUID uuid) {
     log.info("Received request to get holiday with id {}", uuid);
     return holidayService.getHoliday(uuid);
   }
 
-  @GetMapping()
+  @GetMapping
   public List<Holiday> findHolidays(
-      @RequestParam Optional<NationalState> state,
-      @Schema(type = "string") @RequestParam Optional<Year> year,
-      @RequestParam Optional<HolidayType> type) {
+      @RequestParam(required = false) NationalState state,
+      @Schema(type = "string") @RequestParam(required = false) Year year,
+      @RequestParam(required = false) HolidayType type) {
     log.info(
         "Received request to find holidays for state {} in year {} with type {}",
         state,
