@@ -8,19 +8,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.UUID;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = HolidayService.class)
 public class HolidayServiceTest {
 
   @Autowired private HolidayService sut;
 
-  @MockBean private HolidayDao meterDao;
+  @MockBean private HolidayInfoClient holidayInfoClient;
 
-  private static final String GROUP_NAME = "groupName";
-  private static final UUID KEY = UUID.randomUUID();
-  private static final String DEVICE_UID = "deviceUid";
+  @MockBean private HolidayDao holidayDao;
 
   @Test
   public void findMetersReturnNoRecord() {}
