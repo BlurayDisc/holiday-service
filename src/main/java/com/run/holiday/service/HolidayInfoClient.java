@@ -62,7 +62,7 @@ public class HolidayInfoClient {
   }
 
   private String normalise(Element element) {
-    return element.text().replaceAll("\u00a0", "");
+    return element.text().replaceAll("#", "").replaceAll("\u00a0", "").trim();
   }
 
   private Pair<String, String> singleOrSplit(String date) {

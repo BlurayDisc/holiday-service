@@ -34,7 +34,7 @@ public interface HolidayDao {
 
   @SqlBatch(
       "insert into holiday(uuid, state, type, year, date, alternative_date) "
-          + "values (:uid, :nationalState, :type, :year, :date, :alternativeDate)")
+          + "values (:uuid, :nationalState, :type, :year, :date, :alternativeDate)")
   @BatchChunkSize(10)
   void saveAll(@BindBean List<Holiday> meters);
 

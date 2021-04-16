@@ -84,19 +84,16 @@ public class HolidayService {
   }
 
   private static final DateTimeFormatter HOLIDAY_INFO_API_DATE_FORMAT =
-      DateTimeFormatter.ofPattern("yyyy dd MMM");
+      DateTimeFormatter.ofPattern("d MMMM uuuu");
 
   private LocalDate parseHolidayInfoApiDate(String year, String date) {
-    try {
-      String[] dateParts = date.split("\\s+", 1);
+    return LocalDate.parse(
+        String.format("%s %s", normalise(date), year), HOLIDAY_INFO_API_DATE_FORMAT);
+  }
 
-      return LocalDate.parse(
-          String.format("%s %s", year, dateParts[1]), HOLIDAY_INFO_API_DATE_FORMAT);
-    } catch (Error e) {
-      log.info(date);
-      log.info(date.split("\\s+", 1)[0]);
-      log.info(date.split("\\s+", 1)[1]);
-      throw e;
-    }
+  private String normalise(String date) {
+    String[] dateParts = date.split("\\s+", 2);
+    String dayMonth = dateParts[1];
+    return dayMonth.replaceAll("\\*", "");
   }
 }
