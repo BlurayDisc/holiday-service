@@ -1,9 +1,11 @@
 package com.run.holiday.dao;
 
+import com.run.holiday.mapper.HolidayMapper;
 import com.run.holiday.model.Holiday;
 import com.run.holiday.model.HolidayType;
 import com.run.holiday.model.NationalState;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
+import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.statement.BatchChunkSize;
 import org.jdbi.v3.sqlobject.statement.SqlBatch;
@@ -18,6 +20,7 @@ import java.util.UUID;
 public interface HolidayDao {
 
   @SqlQuery("select * from holiday where uuid = :uuid")
+  @RegisterRowMapper(HolidayMapper.class)
   Optional<Holiday> findOne(UUID uuid);
 
   @SqlQuery(
@@ -25,12 +28,8 @@ public interface HolidayDao {
           + "where (:state is null or state = :state) "
           + "and (:year is null or year = :year) "
           + "and (:type is null or type = :type) ")
+  @RegisterRowMapper(HolidayMapper.class)
   List<Holiday> findAll(NationalState state, Integer year, HolidayType type);
-
-  @SqlUpdate(
-      "insert into holiday(uuid, state, type, year, date, alternative_date) "
-          + "values (:uid, :nationalState, :type, :year, :date, :alternativeDate)")
-  void save(@BindBean Holiday holiday);
 
   @SqlBatch(
       "insert into holiday(uuid, state, type, year, date, alternative_date) "
