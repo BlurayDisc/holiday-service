@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: wa-holiday-service
+  profiles:
+    active: default
+  jackson:
+    default-property-inclusion: non_absent
+  datasource:
+    url: jdbc:hsqldb:mem:testDB
+    username: admin
+    password: admin123
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/liquibase-changelog.xml
+
+springdoc:
+  api-docs:
+    enabled: true
+  writer-with-order-by-keys: true
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+
+logging:
+  level:
+    com.run.holiday: DEBUG
+    org.springframework: INFO
+
+holiday-info-service:
+  base-url: https://www.commerce.wa.gov.au/labour-relations/public-holidays-western-australia
