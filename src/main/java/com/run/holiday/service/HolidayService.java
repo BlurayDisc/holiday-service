@@ -12,10 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,11 +26,10 @@ import java.util.UUID;
 public class HolidayService {
 
   private final HolidayInfoClient holidayInfoClient;
-
-  private final HolidayDao meterDao;
+  private final HolidayDao holidayDao;
 
   public Holiday getHoliday(UUID uuid) {
-    return meterDao
+    return holidayDao
         .findOne(uuid)
         .orElseThrow(
             () ->
@@ -36,7 +38,7 @@ public class HolidayService {
   }
 
   public List<Holiday> findHolidays(NationalState state, Year year, HolidayType type) {
-    return meterDao.findAll(
+    return holidayDao.findAll(
         state, Optional.ofNullable(year).map(Year::getValue).orElse(null), type);
   }
 
@@ -46,22 +48,55 @@ public class HolidayService {
           HttpStatus.BAD_REQUEST, "Unsupported state to perform sync: " + state);
     }
 
-    int records = 0;
-    List<Holiday> saved = findHolidays(state, null, null);
-
-    log.debug("Listing existing holidays");
-    saved.forEach(h -> log.debug("{}", h));
-
     try {
       List<HolidayDto> holidayDtos = holidayInfoClient.retrieveHolidayData();
 
+      log.debug("Listing fetched holidays");
+      holidayDtos.forEach(h -> log.debug("{}", h));
+
+      holidayDao.deleteAllByState(state);
+      holidayDao.saveAll(
+          holidayDtos.stream()
+              .map(
+                  dto ->
+                      new Holiday()
+                          .setUuid(UUID.randomUUID())
+                          .setNationalState(state)
+                          .setName(dto.getName())
+                          .setType(HolidayType.resolveFromName(dto.getName()))
+                          .setYear(Integer.parseInt(dto.getYear()))
+                          .setDate(parseHolidayInfoApiDate(dto.getYear(), dto.getDate()))
+                          .setAlternativeDate(
+                              Optional.ofNullable(dto.getAlternativeDate())
+                                  .map(altDate -> parseHolidayInfoApiDate(dto.getYear(), altDate))
+                                  .orElse(null)))
+              .collect(Collectors.toList()));
+
+      int records = holidayDtos.size();
+      return records == 0
+          ? new SyncResultDto(records, "none")
+          : new SyncResultDto(records, "success");
+
     } catch (RuntimeException e) {
       log.error("Error occurred during sync for {}", state, e);
-      return new SyncResultDto(records, "error");
+      return new SyncResultDto(0, "error");
     }
+  }
 
-    return records == 0
-        ? new SyncResultDto(records, "none")
-        : new SyncResultDto(records, "success");
+  private static final DateTimeFormatter HOLIDAY_INFO_API_DATE_FORMAT =
+      DateTimeFormatter.ofPattern("yyyy dd MMM");
+
+  private LocalDate parseHolidayInfoApiDate(String year, String date) {
+    try {
+      String[] dateParts = date.split("\\s+", 1);
+
+      return LocalDate.parse(
+          String.format("%s %s", year, dateParts[1]), HOLIDAY_INFO_API_DATE_FORMAT);
+    } catch (Error e) {
+      log.info(date);
+      log.info(date.split("\\s+", 1)[0]);
+      log.info(date.split("\\s+", 1)[1]);
+      throw e;
+    }
   }
 }

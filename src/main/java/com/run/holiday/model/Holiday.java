@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
 @Data
+@Accessors(chain = true)
 public class Holiday {
 
   @Schema(description = "Unique id (version 4 uuid)")

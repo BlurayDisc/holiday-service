@@ -30,20 +30,20 @@ public class HolidayController {
 
   @GetMapping
   public List<Holiday> findHolidays(
-      @RequestParam(required = false) NationalState state,
+      @RequestParam(required = false) NationalState nationalState,
       @Schema(type = "string") @RequestParam(required = false) Year year,
-      @RequestParam(required = false) HolidayType type) {
+      @RequestParam(required = false) HolidayType holidayType) {
     log.info(
         "Received request to find holidays for state {} in year {} with type {}",
-        state,
+        nationalState,
         year,
-        type);
-    return holidayService.findHolidays(state, year, type);
+        holidayType);
+    return holidayService.findHolidays(nationalState, year, holidayType);
   }
 
   @PostMapping("/actions/sync")
-  public SyncResultDto synchroniseHolidays(@RequestParam NationalState state) {
-    log.info("Received request to synchronise national holidays for state: {} ", state);
-    return holidayService.synchroniseHolidays(state);
+  public SyncResultDto synchroniseHolidays(@RequestParam NationalState nationalState) {
+    log.info("Received request to synchronise national holidays for state: {} ", nationalState);
+    return holidayService.synchroniseHolidays(nationalState);
   }
 }

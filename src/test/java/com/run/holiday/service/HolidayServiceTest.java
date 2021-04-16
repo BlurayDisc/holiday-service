@@ -13,17 +13,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class HolidayServiceTest {
 
   @Autowired private HolidayService sut;
-
   @MockBean private HolidayInfoClient holidayInfoClient;
-
   @MockBean private HolidayDao holidayDao;
 
   @Test
-  public void findMetersReturnNoRecord() {}
-
-  @Test
-  public void demonstrateSuccessfulFindMeters() {}
-
-  @Test
-  public void findMeterKeysReturnNoRecord() {}
+  public void demonstrateSuccessfulSynchroniseHolidays() {}
 }

@@ -20,7 +20,6 @@ public interface HolidayDao {
   @SqlQuery("select * from holiday where uuid = :uuid")
   Optional<Holiday> findOne(UUID uuid);
 
-  // language=SQL
   @SqlQuery(
       "select * from holiday "
           + "where (:state is null or state = :state) "
@@ -28,16 +27,17 @@ public interface HolidayDao {
           + "and (:type is null or type = :type) ")
   List<Holiday> findAll(NationalState state, Integer year, HolidayType type);
 
-  // language=SQL
   @SqlUpdate(
       "insert into holiday(uuid, state, type, year, date, alternative_date) "
           + "values (:uid, :nationalState, :type, :year, :date, :alternativeDate)")
   void save(@BindBean Holiday holiday);
 
-  // language=SQL
   @SqlBatch(
       "insert into holiday(uuid, state, type, year, date, alternative_date) "
           + "values (:uid, :nationalState, :type, :year, :date, :alternativeDate)")
   @BatchChunkSize(10)
   void saveAll(@BindBean List<Holiday> meters);
+
+  @SqlUpdate("delete from holiday where state = :state")
+  void deleteAllByState(NationalState state);
 }

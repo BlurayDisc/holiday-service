@@ -24,6 +24,6 @@ public enum HolidayType {
     for (var t : HolidayType.values()) {
       if (Objects.equals(t.name, name)) return t;
     }
-    throw new IllegalStateException();
+    throw new IllegalStateException("Unable to resolve name: " + name);
   }
 }
